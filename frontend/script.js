@@ -1,5 +1,4 @@
-const BACKEND_URL = "https://mini-python-editor.onrender.com"; 
-
+const BACKEND_URL = "https://your-backend-url.onrender.com"; // Replace with actual backend URL
 
 window.onload = () => {
   const saved = localStorage.getItem("userCode");
@@ -13,6 +12,7 @@ document.getElementById("code").addEventListener("input", (e) => {
 function runCode() {
   const code = document.getElementById("code").value;
   const input = document.getElementById("input").value;
+
   fetch(BACKEND_URL + "/run", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -26,6 +26,9 @@ function runCode() {
       } else {
         output.textContent = data.output + "\n\nExecution Time: " + data.exec_time;
       }
+    })
+    .catch(err => {
+      document.getElementById("output").textContent = "Server error: " + err.message;
     });
 }
 
@@ -43,9 +46,16 @@ function toggleDarkMode() {
 }
 
 function loadSnippet() {
-  const snippet = document.getElementById("snippets").value;
-  if (snippet) {
-    document.getElementById("code").value = snippet;
-    localStorage.setItem("userCode", snippet);
+  const snippets = {
+    hello: "print('Hello World')",
+    input: "name = input('Name: ')\nprint('Hello', name)",
+    loop: "for i in range(5):\n    print(i)",
+    func: "def greet():\n    print('Hi')\ngreet()"
+  };
+
+  const selected = document.getElementById("snippets").value;
+  if (selected && snippets[selected]) {
+    document.getElementById("code").value = snippets[selected];
+    localStorage.setItem("userCode", snippets[selected]);
   }
 }
