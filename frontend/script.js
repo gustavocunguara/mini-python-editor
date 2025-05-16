@@ -1,4 +1,4 @@
-const BACKEND_URL = "https://your-backend-url.onrender.com"; // Replace with actual backend URL
+const BACKEND_URL = "https://mini-python-editor.onrender.com"; // Replace with actual backend URL
 
 window.onload = () => {
   const saved = localStorage.getItem("userCode");
