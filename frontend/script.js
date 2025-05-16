@@ -1,8 +1,11 @@
+// Replace with your actual Render backend URL
+const BACKEND_URL = "https://mini-python-editor.onrender.com"; 
+
 function runCode() {
     const code = document.getElementById("code").value;
     const input = document.getElementById("input").value;
 
-    fetch('http://localhost:5000/run', {
+    fetch(`${BACKEND_URL}/run`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
