@@ -1,15 +1,10 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import subprocess
-import tempfile
 import os
-
 
 app = Flask(__name__)
 CORS(app)
-
-
-app = Flask(__name__)
 
 @app.route('/run', methods=['POST'])
 def run_code():
@@ -17,27 +12,27 @@ def run_code():
     code = data.get('code', '')
     user_input = data.get('input', '')
 
-    with tempfile.NamedTemporaryFile(mode='w+', suffix='.py', delete=False) as temp_code_file:
-        temp_code_file.write(code)
-        temp_code_file.flush()
-        temp_code_file_name = temp_code_file.name
+    # Save code to a temporary Python file
+    with open("user_code.py", "w") as f:
+        f.write(code)
 
     try:
+        # Run the code and capture output
         result = subprocess.run(
-            ['python3', temp_code_file_name],
+            ["python3", "user_code.py"],
             input=user_input.encode('utf-8'),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            timeout=10
+            timeout=5
         )
-        output = result.stdout.decode('utf-8')
-        error = result.stderr.decode('utf-8')
-        os.remove(temp_code_file_name)
-
-        return jsonify({'output': output, 'error': error})
-
+        return jsonify({
+            "output": result.stdout.decode('utf-8'),
+            "error": result.stderr.decode('utf-8')
+        })
     except subprocess.TimeoutExpired:
-        return jsonify({'output': '', 'error': 'Execution timed out.'})
+        return jsonify({"error": "Execution timed out"}), 400
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Use Render-assigned port or default to 5000
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
